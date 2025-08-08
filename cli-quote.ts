@@ -7,14 +7,14 @@ import readline from 'readline';
 
 // Personal branding
 const BRAND = {
-  name: "Sebastián Marín",
-  email: "contact@sebmarin.me",
-  website: "www.sebmarin.me",
-  logo: path.resolve(__dirname, "../Logo-Black.png"), // PNG format for PDFKit compatibility
+  name: "Your Name",
+  email: "your.email@example.com",
+  website: "www.yourwebsite.com",
+  logo: path.resolve(__dirname, "../logo.png"), // PNG format for PDFKit compatibility
 };
 
 // Constants
-const HOURLY_RATE = 46; // €
+const HOURLY_RATE = 50; // € - Update this with your hourly rate
 const QUOTES_DIR = path.resolve(__dirname, '../quotes');
 
 const rl = readline.createInterface({
@@ -38,33 +38,33 @@ interface Service {
 
 const SERVICES: Record<string, Service> = {
   scriptPlanning: { name: "Script + Planning", baseTime: 1.5, rate: HOURLY_RATE },
-  screenRecording: { name: "Screen Recording + Voiceover", baseTime: .5, rate: HOURLY_RATE },
-  facecamRecording: { name: "Camera Equipment + Recording Time", baseTime: 1, rate: HOURLY_RATE, optional: true },
-  editing: { name: "Editing + Assembly", baseTime: 2, rate: HOURLY_RATE },
-  motionGraphics: { name: "Motion Graphics", baseTime: 2, rate: HOURLY_RATE, optional: true },
+  screenRecording: { name: "Screen Recording + Voiceover", baseTime: 1, rate: HOURLY_RATE },
+  facecamRecording: { name: "Camera Equipment + Recording Time", baseTime: 0.5, rate: HOURLY_RATE, optional: true },
+  editing: { name: "Editing + Assembly", baseTime: 3, rate: HOURLY_RATE },
+  motionGraphics: { name: "Motion Graphics", baseTime: 1, rate: HOURLY_RATE, optional: true },
   admin: { name: "Admin / Export / Feedback", baseTime: 0.5, rate: HOURLY_RATE }
 };
 
 // Video length multipliers
 const VIDEO_LENGTH_MULTIPLIERS = {
-  short: { name: "Short (30s-2min)", editingMultiplier: 0.5, recordingMultiplier: 1.0 },
-  standard: { name: "Standard (2-5min)", editingMultiplier: 2, recordingMultiplier: 1.0 },
-  long: { name: "Long (5-10min)", editingMultiplier: 5, recordingMultiplier: 1.5 },
-  extended: { name: "Extended (10min+)", editingMultiplier: 10, recordingMultiplier: 2.0 }
+  short: { name: "Short (30s-2min)", editingMultiplier: 0.8, recordingMultiplier: 0.8 },
+  standard: { name: "Standard (2-5min)", editingMultiplier: 1.0, recordingMultiplier: 1.0 },
+  long: { name: "Long (5-10min)", editingMultiplier: 1.4, recordingMultiplier: 1.2 },
+  extended: { name: "Extended (10min+)", editingMultiplier: 1.8, recordingMultiplier: 1.5 }
 };
 
 // Motion graphics complexity multipliers
 const MOTION_GRAPHICS_COMPLEXITY = {
   simple: { name: "Simple (text animations, basic transitions)", multiplier: 1.0 },
-  standard: { name: "Standard (icons, charts, moderate animations)", multiplier: 3.0 },
-  complex: { name: "Complex (custom animations, 3D elements)", multiplier: 15.0 }
+  standard: { name: "Standard (icons, charts, moderate animations)", multiplier: 1.5 },
+  complex: { name: "Complex (custom animations, 3D elements)", multiplier: 2.5 }
 };
 
 // Discount tiers based on quantity
 const QUANTITY_DISCOUNTS = {
-  small: { minVideos: 3, maxVideos: 5, discount: 0.10, name: "Small Batch Discount (3-5 videos)" },
-  medium: { minVideos: 6, maxVideos: 10, discount: 0.20, name: "Medium Batch Discount (6-10 videos)" },
-  large: { minVideos: 11, maxVideos: Infinity, discount: 0.25, name: "Large Batch Discount (11+ videos)" }
+  small: { minVideos: 3, maxVideos: 5, discount: 0.05, name: "Small Batch Discount (3-5 videos)" },
+  medium: { minVideos: 6, maxVideos: 10, discount: 0.10, name: "Medium Batch Discount (6-10 videos)" },
+  large: { minVideos: 11, maxVideos: Infinity, discount: 0.15, name: "Large Batch Discount (11+ videos)" }
 };
 
 async function promptUser() {
@@ -269,22 +269,22 @@ function createPDF({
     .fontSize(11)
     .fillColor('#1a1a1a')
     .font('Helvetica-Bold')
-    .text('Sebastian Marin', rightColumnX, headerY - 20 + logoSize + 11);
+    .text(BRAND.name, rightColumnX, headerY - 20 + logoSize + 11);
 
   doc
     .fontSize(9)
     .fillColor('#6a6a6a')
     .font('Helvetica')
     .text(BRAND.email, rightColumnX, headerY - 20 + logoSize + 28)
-    .text('+39 347 869 8888', rightColumnX, headerY - 20 + logoSize + 41)
-    .text('Rome, Italy', rightColumnX, headerY - 20 + logoSize + 54);
+    .text('+1 (555) 123-4567', rightColumnX, headerY - 20 + logoSize + 41) // Update with your phone
+    .text('Your City, Country', rightColumnX, headerY - 20 + logoSize + 54); // Update with your location
 
   // Subtle tagline with generous spacing
   doc
     .fontSize(10)
     .fillColor('#8a8a8a')
     .font('Helvetica')
-    .text('Digital content specialist • Technical video producer • Growth business strategist', 50, headerY + 100, { 
+    .text('Your professional tagline • Your specialties • Your unique value proposition', 50, headerY + 100, { 
       align: 'left', 
       width: rightColumnX - 70, // Constrain to left area only
     });
@@ -606,7 +606,7 @@ function createPDF({
     .fontSize(8)
     .fillColor('#666666')
     .font('Helvetica')
-    .text('Payment Terms: 50% upfront, 50% upon delivery. Includes 2 revision rounds — additional rounds billed at €46/hour.', 50, currentY, { width: 450, align: 'left' });
+    .text('Payment Terms: 50% upfront, 50% upon delivery. Includes 2 revision rounds — additional rounds billed at €' + HOURLY_RATE + '/hour.', 50, currentY, { width: 450, align: 'left' });
 
 
     doc.end();

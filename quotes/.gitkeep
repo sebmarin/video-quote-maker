@@ -1,0 +1,2 @@
+# This file ensures the quotes directory is included in git
+# while allowing the .gitignore to filter out personal quotes

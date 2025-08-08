@@ -1,18 +1,45 @@
+# Personal files - keep on personal branch only
+logo.png
+logo.jpg
+logo.jpeg
+logo.svg
+Logo-*.png
+Logo-*.jpg
+Logo-Black.png
+Logo-White.png
+
+# Generated quotes (except test examples)
+quotes/*
+!quotes/test-*.pdf
+!quotes/.gitkeep
+
+# Compiled JavaScript
 node_modules/
 dist/
-quotes/
+build/
+
+# Logs
 *.log
 npm-debug.log*
 yarn-debug.log*
 yarn-error.log*
+
+# Environment files
 .env
 .env.local
 .env.development.local
 .env.test.local
 .env.production.local
+
+# IDE and OS files
 .DS_Store
-.vscode/
+.vscode/settings.json
+.vscode/launch.json
+.idea/
+*.swp
+*.swo
 *.tsbuildinfo
 
-# Keep original logo formats
-# Logo-White.png
+# Personal configuration files
+personal-config.json
+config.json
