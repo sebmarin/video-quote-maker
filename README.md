@@ -22,7 +22,7 @@ A professional CLI tool for generating detailed PDF quotes for video production 
 
 1. Clone this repository
 ```bash
-git clone https://github.com/yourusername/video-quote-maker.git
+git clone https://github.com/sebmarin/video-quote-maker.git
 cd video-quote-maker
 ```
 
