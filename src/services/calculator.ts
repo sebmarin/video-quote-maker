@@ -166,7 +166,7 @@ export function getServiceBreakdown(
   }
   
   breakdown.push({
-    name: "Admin / Export / Feedback",
+    name: SERVICES.admin.name,
     time: SERVICES.admin.baseTime * videoTypeConfig.services.admin.multiplier,
     rate: SERVICES.admin.rate
   });

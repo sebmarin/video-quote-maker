@@ -8,7 +8,7 @@ export const SERVICES: Record<string, Service> = {
   facecamRecording: { name: "Camera Equipment + Recording Time", baseTime: 0.5, rate: HOURLY_RATE, optional: true },
   editing: { name: "Editing + Assembly", baseTime: 3, rate: HOURLY_RATE },
   motionGraphics: { name: "Motion Graphics", baseTime: 1, rate: HOURLY_RATE, optional: true },
-  admin: { name: "Admin / Export / Feedback", baseTime: 0.5, rate: HOURLY_RATE },
+  admin: { name: "Post-Production + Delivery", baseTime: 0.5, rate: HOURLY_RATE },
   
   // Marketing/Creative specific services
   locationScouting: { name: "Location Scouting + Setup", baseTime: 2, rate: HOURLY_RATE, optional: true },
