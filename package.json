@@ -1,0 +1,26 @@
+{
+  "name": "video-quote-maker",
+  "version": "1.0.0",
+  "description": "CLI tool for generating PDF quotes for video projects",
+  "main": "dist/cli-quote.js",
+  "bin": {
+    "quote-gen": "dist/cli-quote.js"
+  },
+  "scripts": {
+    "build": "tsc",
+    "start": "node dist/cli-quote.js",
+    "dev": "ts-node cli-quote.ts"
+  },
+  "keywords": ["cli", "pdf", "quote", "generator"],
+  "author": "Sebastián Marín",
+  "license": "MIT",
+  "dependencies": {
+    "@types/pdfkit": "^0.17.2",
+    "pdfkit": "^0.17.1"
+  },
+  "devDependencies": {
+    "@types/node": "^20.0.0",
+    "typescript": "^5.0.0",
+    "ts-node": "^10.9.0"
+  }
+}
