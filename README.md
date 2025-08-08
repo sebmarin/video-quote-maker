@@ -1,15 +1,16 @@
 # Video Quote Generator
 
-A professional CLI tool for generating detailed PDF quotes for video production services. Features dynamic pricing based on video complexity, batch discounts, and professional invoice-style formatting.
+A professional CLI tool for generating detailed PDF quotes for video production services. Features dynamic pricing based on video type, complexity, batch discounts, and professional invoice-style formatting.
 
 ## Features
 
-- 🎬 **Complex Video Pricing**: Automatic calculations based on video length, motion graphics complexity, and facecam requirements
+- 🎬 **Video Type Multipliers**: Specialized pricing for Technical Tutorials, Creative/Marketing Videos, and Animation-Heavy content
 - 📊 **Professional PDFs**: Clean, Apple/GitHub-inspired design with detailed service breakdowns
 - 💰 **Batch Discounts**: Automatic volume pricing for 3+ videos (5%, 10%, 15% tiers)
 - ⏰ **Half-Hour Billing**: Consistent half-hour increments for professional billing
 - 📈 **Project Scope**: Includes delivery estimates based on 40-hour work weeks
 - 🎛️ **Flexible Display**: Option to show/hide detailed hourly breakdowns for client presentation
+- 🏗️ **Modular Architecture**: Professional TypeScript structure for easy maintenance and extension
 
 ## Quick Start
 
@@ -124,7 +125,17 @@ Customize your tagline:
 
 ## Usage
 
-### Interactive Mode
+### Easy CLI Access
+```bash
+# Quick start - just run:
+npm start
+# or
+npm run quote
+# or directly:
+node quote.js
+```
+
+### Development Mode
 ```bash
 npm run dev
 ```
@@ -132,11 +143,12 @@ npm run dev
 Follow the prompts to:
 1. Enter client and project details
 2. Specify number of videos
-3. Choose video length (Short/Standard/Long/Extended)
-4. Select facecam requirements
-5. Choose motion graphics complexity
-6. Decide on hourly breakdown visibility
-7. Apply batch discounts (if eligible)
+3. Choose video type (Technical/Creative/Animation)
+4. Select video length (Short/Standard/Long/Extended)
+5. Select facecam requirements
+6. Choose motion graphics complexity
+7. Decide on hourly breakdown visibility
+8. Apply batch discounts (if eligible)
 8. Add notes
 
 ### Test Scripts

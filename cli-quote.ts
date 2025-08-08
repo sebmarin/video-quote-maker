@@ -10,12 +10,12 @@ const BRAND = {
   name: "Your Name",
   email: "your.email@example.com",
   website: "www.yourwebsite.com",
-  logo: path.resolve(__dirname, "../logo.png"), // PNG format for PDFKit compatibility
+  logo: path.resolve(__dirname, __dirname.includes('dist') ? '../logo.png' : 'logo.png'), // PNG format for PDFKit compatibility
 };
 
 // Constants
 const HOURLY_RATE = 50; // € - Update this with your hourly rate
-const QUOTES_DIR = path.resolve(__dirname, '../quotes');
+const QUOTES_DIR = path.resolve(__dirname, __dirname.includes('dist') ? '../quotes' : 'quotes');
 
 const rl = readline.createInterface({
   input: process.stdin,
@@ -26,6 +26,43 @@ const question = (query: string): Promise<string> => {
   return new Promise((resolve) => {
     rl.question(query, resolve);
   });
+};
+
+// Video type categories with different service profiles
+const VIDEO_TYPES = {
+  technical: {
+    name: "Technical Tutorial / Product Demo",
+    services: {
+      scriptPlanning: { multiplier: 1.0 },
+      screenRecording: { multiplier: 1.0 },
+      facecamRecording: { multiplier: 1.0 },
+      editing: { multiplier: 1.0 },
+      motionGraphics: { multiplier: 0.8 }, // Less motion graphics typically
+      admin: { multiplier: 1.0 }
+    }
+  },
+  creative: {
+    name: "Creative / Marketing Video",
+    services: {
+      scriptPlanning: { multiplier: 1.5 }, // More planning for creative direction
+      screenRecording: { multiplier: 0.5 }, // Less screen recording
+      facecamRecording: { multiplier: 1.2 }, // More setup for lighting/aesthetics
+      editing: { multiplier: 1.4 }, // More creative editing
+      motionGraphics: { multiplier: 1.5 }, // More graphics work
+      admin: { multiplier: 1.2 } // More revisions typically
+    }
+  },
+  animation: {
+    name: "Animation Heavy / Motion Graphics",
+    services: {
+      scriptPlanning: { multiplier: 1.8 }, // Heavy storyboarding
+      screenRecording: { multiplier: 0.2 }, // Minimal screen recording
+      facecamRecording: { multiplier: 0.3 }, // Minimal facecam
+      editing: { multiplier: 1.2 }, // Assembly focused
+      motionGraphics: { multiplier: 3.0 }, // Heavy animation work
+      admin: { multiplier: 1.5 } // More iterations
+    }
+  }
 };
 
 // Service definitions with base times that can be modified by complexity
@@ -72,6 +109,15 @@ async function promptUser() {
   const projectName = (await question("Project Name: ")).trim();
   const numVideos = parseInt(await question("Number of Videos: "), 10);
   
+  // Video type selection
+  console.log("\nVideo Type:");
+  console.log("1. Technical Tutorial / Product Demo");
+  console.log("2. Creative / Marketing Video");
+  console.log("3. Animation Heavy / Motion Graphics");
+  const videoTypeChoice = (await question("Choose video type (1-3): ")).trim();
+  const videoTypeMap = ["technical", "creative", "animation"];
+  const videoType = videoTypeMap[parseInt(videoTypeChoice) - 1] || "technical";
+  
   // Video length selection
   console.log("\nVideo Length:");
   console.log("1. Short (30s-2min)");
@@ -103,7 +149,7 @@ async function promptUser() {
   const showRateCalculation = (await question("\nShow detailed hourly breakdown in PDF? (y/n): ")).trim().toLowerCase() === 'y';
   
   // For all quotes, calculate based on complexity first
-  const hoursPerVideo = calculateVideoHours(videoLength, needsFacecam, needsMotionGraphics, motionGraphicsComplexity);
+  const hoursPerVideo = calculateVideoHours(videoType, videoLength, needsFacecam, needsMotionGraphics, motionGraphicsComplexity);
   
   let discountTier: string | undefined = undefined;
   
@@ -143,6 +189,7 @@ async function promptUser() {
     hoursPerVideo, 
     extraNotes, 
     discountTier,
+    videoType,
     videoLength,
     needsFacecam,
     needsMotionGraphics,
@@ -153,6 +200,7 @@ async function promptUser() {
 
 // Function to calculate hours based on video complexity
 function calculateVideoHours(
+  videoType: string,
   videoLength: string,
   needsFacecam: boolean,
   needsMotionGraphics: boolean,
@@ -160,28 +208,29 @@ function calculateVideoHours(
 ): number {
   const lengthMultipliers = VIDEO_LENGTH_MULTIPLIERS[videoLength as keyof typeof VIDEO_LENGTH_MULTIPLIERS];
   const mgComplexity = MOTION_GRAPHICS_COMPLEXITY[motionGraphicsComplexity as keyof typeof MOTION_GRAPHICS_COMPLEXITY];
+  const typeMultipliers = VIDEO_TYPES[videoType as keyof typeof VIDEO_TYPES];
   
   let totalHours = 0;
   
-  // Script + Planning (always included)
-  totalHours += SERVICES.scriptPlanning.baseTime;
+  // Script + Planning (always included) - apply video type multiplier
+  totalHours += SERVICES.scriptPlanning.baseTime * (typeMultipliers?.services?.scriptPlanning?.multiplier || 1.0);
   
-  // Recording (screen + optional facecam)
-  totalHours += SERVICES.screenRecording.baseTime * lengthMultipliers.recordingMultiplier;
+  // Recording (screen + optional facecam) - apply video type and length multipliers
+  totalHours += SERVICES.screenRecording.baseTime * lengthMultipliers.recordingMultiplier * (typeMultipliers?.services?.screenRecording?.multiplier || 1.0);
   if (needsFacecam) {
-    totalHours += SERVICES.facecamRecording.baseTime * lengthMultipliers.recordingMultiplier;
+    totalHours += SERVICES.facecamRecording.baseTime * lengthMultipliers.recordingMultiplier * (typeMultipliers?.services?.facecamRecording?.multiplier || 1.0);
   }
   
-  // Editing (affected by video length)
-  totalHours += SERVICES.editing.baseTime * lengthMultipliers.editingMultiplier;
+  // Editing (affected by video length and type)
+  totalHours += SERVICES.editing.baseTime * lengthMultipliers.editingMultiplier * (typeMultipliers?.services?.editing?.multiplier || 1.0);
   
-  // Motion Graphics (optional, affected by complexity)
+  // Motion Graphics (optional, affected by complexity and type)
   if (needsMotionGraphics) {
-    totalHours += SERVICES.motionGraphics.baseTime * mgComplexity.multiplier;
+    totalHours += SERVICES.motionGraphics.baseTime * mgComplexity.multiplier * (typeMultipliers?.services?.motionGraphics?.multiplier || 1.0);
   }
   
-  // Admin (always included)
-  totalHours += SERVICES.admin.baseTime;
+  // Admin (always included) - apply video type multiplier
+  totalHours += SERVICES.admin.baseTime * (typeMultipliers?.services?.admin?.multiplier || 1.0);
   
   return roundToHalfHour(totalHours); // Round to nearest half hour
 }
@@ -210,6 +259,7 @@ function createPDF({
   outPath,
   dateStr,
   discountTier,
+  videoType,
   videoLength,
   needsFacecam,
   needsMotionGraphics,
@@ -225,6 +275,7 @@ function createPDF({
   outPath: string;
   dateStr: string;
   discountTier?: string;
+  videoType?: string;
   videoLength?: string;
   needsFacecam?: boolean;
   needsMotionGraphics?: boolean;
@@ -448,8 +499,7 @@ function createPDF({
   const videoLengthDisplay = videoLength ? VIDEO_LENGTH_MULTIPLIERS[videoLength as keyof typeof VIDEO_LENGTH_MULTIPLIERS].name : "Standard (2-5min)";
   const actualHours = hoursPerVideo;
   
-  // Extract video type and duration for cleaner display
-  const videoType = videoLengthDisplay.split(' ')[0]; // "Short", "Standard", etc.
+  // Extract video duration for cleaner display
   const videoDuration = videoLengthDisplay.match(/\(([^)]+)\)/)?.[1] || "2-5min"; // Extract just the duration part
   
   // Show clean video length description - omit "Standard" as it's redundant
@@ -624,7 +674,7 @@ async function main() {
 
   console.log("Welcome to the PDF Quote Generator!\n");
 
-  const { clientName, projectName, numVideos, hoursPerVideo, extraNotes, discountTier, videoLength, needsFacecam, needsMotionGraphics, motionGraphicsComplexity, showRateCalculation } = await promptUser();
+  const { clientName, projectName, numVideos, hoursPerVideo, extraNotes, discountTier, videoType, videoLength, needsFacecam, needsMotionGraphics, motionGraphicsComplexity, showRateCalculation } = await promptUser();
 
   if (!clientName || !projectName || isNaN(numVideos)) {
     console.error("Missing or invalid input. Exiting.");
@@ -659,6 +709,7 @@ async function main() {
     outPath,
     dateStr,
     discountTier,
+    videoType,
     videoLength,
     needsFacecam,
     needsMotionGraphics,

@@ -2,14 +2,16 @@
   "name": "video-quote-maker",
   "version": "1.0.0",
   "description": "CLI tool for generating PDF quotes for video projects",
-  "main": "dist/cli-quote.js",
+  "main": "dist/src/index.js",
   "bin": {
-    "quote-gen": "dist/cli-quote.js"
+    "video-quote": "quote.js"
   },
   "scripts": {
     "build": "tsc",
-    "start": "node dist/cli-quote.js",
-    "dev": "ts-node cli-quote.ts"
+    "start": "node quote.js",
+    "quote": "node quote.js",
+    "dev": "ts-node src/index.ts",
+    "clean": "rm -rf dist"
   },
   "keywords": ["cli", "pdf", "quote", "generator"],
   "author": "Sebastián Marín",
