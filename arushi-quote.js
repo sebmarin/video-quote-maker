@@ -1,28 +1,29 @@
 #!/usr/bin/env node
 
-// Simple test script to generate a sample quote with new CLI flow
+// Simple test script to generate a sample quote with new modular CLI flow
 const { spawn } = require('child_process');
 const path = require('path');
 
-console.log('Generating a test quote with new streamlined CLI...\n');
+console.log('Generating a test quote with new modular CLI...\n');
 
-const child = spawn('node', ['dist/cli-quote.js'], {
+const child = spawn('node', ['quote.js'], {
   stdio: ['pipe', 'inherit', 'inherit'],
   cwd: __dirname
 });
 
-// Updated inputs for new CLI flow
+// Updated inputs for new modular CLI flow
 const inputs = [
-  'Arushi Gupta',           // Client Name
+  'Arushi Gupta',                    // Client Name
   'Passbolt Youtube Shorts Production', // Project Name  
-  '3',                  // Number of Videos
-  '1',                  // Video Length (1 = Short 30s-2min)
-  'y',                  // Facecam recording (y/n)
-  'y',                  // Motion graphics (y/n)
-  '1',                  // Motion graphics complexity (1 = Simple)
-  'y',                  // Show detailed hourly breakdown (y/n)
-  '1',                  // Apply batch discount (1 = yes, 2 = no discount)
-  ''                    // Extra Notes
+  '3',                              // Number of Videos
+  '1',                              // Video Type (1 = Technical Tutorial)
+  '1',                              // Video Length (1 = Short 30s-2min)
+  'y',                              // Do you need facecam/on-camera recording? (y/n)
+  'y',                              // Do you need motion graphics/animations? (y/n)
+  '1',                              // Motion graphics complexity (1 = Simple)
+  'y',                              // Show detailed hourly breakdown (y/n)
+  '1',                              // Apply batch discount (1 = yes for first available discount)
+  ''                                // Extra Notes
 ];
 
 let inputIndex = 0;

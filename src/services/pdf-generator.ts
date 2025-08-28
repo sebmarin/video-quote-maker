@@ -67,29 +67,37 @@ export function createPDF(data: PDFData): Promise<void> {
     .fontSize(10)
     .fillColor('#8a8a8a')
     .font('Helvetica')
-    .text(BRAND.tagline || 'Your professional tagline • Your specialties • Your unique value proposition', 50, headerY + 100, { 
+    .text(BRAND.tagline || 'Your professional tagline • Your specialties • Your unique value proposition', 50, headerY + 90, { 
       align: 'left', 
       width: rightColumnX - 70,
     });
 
-  // Ultra-minimal separator line
+  // Ultra-minimal gradient separator line - fades from gray to white, stops before contact column
+  const separatorY = headerY + 110;
+  const separatorStartX = 50;
+  const separatorEndX = rightColumnX - 30; // Stop 30px before contact column
+  
+  // Create gradient from gray to white
+  const gradient = doc.linearGradient(separatorStartX, separatorY, separatorEndX, separatorY);
+  gradient.stop(0, '#e6e6e6')  // Start with current gray color
+          .stop(0.8, '#f5f5f5')  // Fade to light gray
+          .stop(1, '#ffffff');   // End with white
+  
+  // Draw the gradient line
   doc
-    .moveTo(50, headerY + 120)
-    .lineTo(doc.page.width - 50, headerY + 130)
-    .strokeColor('#e6e6e6')
-    .lineWidth(0.5)
-    .stroke();
+    .rect(separatorStartX, separatorY, separatorEndX - separatorStartX, 0.5)
+    .fill(gradient);
 
-  // Clean, minimal quote header
-  doc
-    .fontSize(28)
+// Clean, minimal quote header with tighter spacing
+doc
+    .fontSize(20)
     .fillColor('#1a1a1a')
     .font('Helvetica')
-    .text('Quote', 50, headerY + 140);
+    .text('Quote', 50, headerY + 120); // moved up
 
-  // Project info with clean typography
-  let infoY = headerY + 185;
-  const videoTypeConfig = VIDEO_TYPES[data.videoType];
+// Project info with clean typography
+let infoY = headerY + 150; // moved up
+const videoTypeConfig = VIDEO_TYPES[data.videoType];
   
   doc
     .fontSize(11)
@@ -100,7 +108,7 @@ export function createPDF(data: PDFData): Promise<void> {
     .text(`Project: ${data.projectName}`, 50, infoY + 30)
     .text(`Video Type: ${videoTypeConfig.name}`, 50, infoY + 45);
 
-  let currentY = infoY + 80;
+  let currentY = infoY + 70; // 65 + 5 (1/3 back towards 80)
 
   // Service breakdown header - only show "Per Video" if multiple videos
   const breakdownTitle = data.numVideos > 1 ? 'Service Breakdown (Per Video)' : 'Service Breakdown';
@@ -110,7 +118,7 @@ export function createPDF(data: PDFData): Promise<void> {
     .font('Helvetica-Bold')
     .text(breakdownTitle, 50, currentY);
 
-  currentY += 30;
+  currentY += 27; // 25 + 2 (1/3 back towards 30)
 
   // Clean table headers with better spacing
   doc
@@ -148,11 +156,11 @@ export function createPDF(data: PDFData): Promise<void> {
       }
       
       totalPerVideo += service.time * service.rate;
-      currentY += 16;
+      currentY += 15; // 14 + 1 (1/3 back towards 16)
     }
   });
 
-  currentY += 10;
+  currentY += 9; // 8 + 1 (1/3 back towards 10)
   
   // Add separator line
   doc
@@ -162,7 +170,7 @@ export function createPDF(data: PDFData): Promise<void> {
     .lineWidth(1)
     .stroke();
   
-  currentY += 15;
+  currentY += 13; // 12 + 1 (1/3 back towards 15)
 
   // Dynamic video length display
   const videoLengthDisplay = VIDEO_LENGTH_MULTIPLIERS[data.videoLength].name;
@@ -190,7 +198,7 @@ export function createPDF(data: PDFData): Promise<void> {
     doc.text(`EUR ${totalPerVideo.toFixed(2)}`, 450, currentY, { align: 'right', width: 100 });
   }
 
-  currentY += 30;
+  currentY += 27; // 25 + 2 (1/3 back towards 30)
 
   // Project scope with enhanced details
   doc
@@ -199,7 +207,7 @@ export function createPDF(data: PDFData): Promise<void> {
     .font('Helvetica-Bold')
     .text('PROJECT SCOPE', 50, currentY);
 
-  currentY += 20;
+  currentY += 19; // 18 + 1 (1/3 back towards 20)
 
   const regularTotal = data.numVideos * data.hoursPerVideo * HOURLY_RATE;
   const totalHours = data.numVideos * data.hoursPerVideo;
@@ -227,11 +235,11 @@ export function createPDF(data: PDFData): Promise<void> {
     .fillColor('#333333')
     .font('Helvetica')
     .text(`Videos: ${data.numVideos} × ${videoTypeConfig.name}`, 50, currentY)
-    .text(`Hours per video: ${data.hoursPerVideo}`, 50, currentY + 15)
-    .text(`Total hours needed: ${totalHours}`, 50, currentY + 30)
-    .text(`Estimated delivery: ${deliveryEstimate} (before feedback rounds)`, 50, currentY + 45);
+    .text(`Hours per video: ${data.hoursPerVideo}`, 50, currentY + 13) // 12 + 1 (1/3 back towards 15)
+    .text(`Total hours needed: ${totalHours}`, 50, currentY + 26)      // 24 + 2 (1/3 back towards 30)
+    .text(`Estimated delivery: ${deliveryEstimate} (before feedback rounds)`, 50, currentY + 39); // 36 + 3 (1/3 back towards 45)
 
-  currentY += 75;
+  currentY += 60; // 55 + 5 (1/3 back towards 75)
 
   doc
     .fontSize(12)
@@ -240,7 +248,7 @@ export function createPDF(data: PDFData): Promise<void> {
     .text(`Subtotal:`, 50, currentY)
     .text(`EUR ${regularTotal.toFixed(2)}`, 450, currentY, { align: 'right', width: 100 });
 
-  currentY += 25;
+  currentY += 22; // 20 + 2 (1/3 back towards 25)
 
   // Quantity discount section (if applicable)
   if (data.discountTier) {
@@ -254,7 +262,7 @@ export function createPDF(data: PDFData): Promise<void> {
       .font('Helvetica-Bold')
       .text('QUANTITY DISCOUNT APPLIED', 50, currentY);
 
-    currentY += 20;
+    currentY += 19; // 18 + 1 (1/3 back towards 20)
 
     doc
       .fontSize(10)
@@ -262,7 +270,7 @@ export function createPDF(data: PDFData): Promise<void> {
       .font('Helvetica')
       .text(`${discount.name} (${discountPercentage}% off)`, 50, currentY);
 
-    currentY += 15;
+    currentY += 13; // 12 + 1 (1/3 back towards 15)
 
     doc
       .fontSize(10)
@@ -271,7 +279,7 @@ export function createPDF(data: PDFData): Promise<void> {
       .text(`Quantity discount savings:`, 50, currentY)
       .text(`-EUR ${discountAmount.toFixed(2)}`, 450, currentY, { align: 'right', width: 100 });
 
-    currentY += 20;
+    currentY += 19; // 18 + 1 (1/3 back towards 20)
   }
 
   // Add separator line before total
@@ -282,7 +290,7 @@ export function createPDF(data: PDFData): Promise<void> {
     .lineWidth(1)
     .stroke();
   
-  currentY += 15;
+  currentY += 13; // 12 + 1 (1/3 back towards 15)
 
   // Final total with subtle accent color
   doc
@@ -292,7 +300,7 @@ export function createPDF(data: PDFData): Promise<void> {
     .text(`TOTAL QUOTE:`, 50, currentY)
     .text(`EUR ${data.total.toLocaleString('en-US', { minimumFractionDigits: 2 })}`, 400, currentY, { align: 'right', width: 150 });
 
-  currentY += 40;
+  currentY += 33; // 30 + 3 (1/3 back towards 40)
 
   // Notes section with clean formatting
   if (data.extraNotes) {
@@ -302,7 +310,7 @@ export function createPDF(data: PDFData): Promise<void> {
       .font('Helvetica-Bold')
       .text('NOTES', 50, currentY);
 
-    currentY += 18;
+    currentY += 16; // 15 + 1 (1/3 back towards 18)
 
     doc
       .fontSize(10)
@@ -310,21 +318,19 @@ export function createPDF(data: PDFData): Promise<void> {
       .font('Helvetica')
       .text(data.extraNotes, 50, currentY, { width: 400, align: 'left' });
 
-    currentY += 35;
+    currentY += 28; // 25 + 3 (1/3 back towards 35)
   }
 
-  // Enhanced footer with more context and professionalism
+    // Enhanced footer with comprehensive professional terms - single block with line breaks
+  const footerWidth = doc.page.width - 100; // Full width minus margins
+  
+  const footerText = BRAND.footerTerms.replace('{HOURLY_RATE}', HOURLY_RATE.toString());
+  
   doc
     .fontSize(8)
     .fillColor('#666666')
     .font('Helvetica')
-    .text('This quote is valid for 30 days from the date above. All prices are in EUR and exclude VAT where applicable.', 50, currentY - 10, { width: 450, align: 'left' });
-
-  doc
-    .fontSize(8)
-    .fillColor('#666666')
-    .font('Helvetica')
-    .text('Payment Terms: 50% upfront, 50% upon delivery. Includes 2 revision rounds — additional rounds billed at €' + HOURLY_RATE + '/hour.', 50, currentY, { width: 450, align: 'left' });
+    .text(footerText, 50, currentY, { width: footerWidth, align: 'justify' });
 
   doc.end();
 
